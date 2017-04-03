@@ -15,7 +15,6 @@
 
 #include "webrtc/base/checks.h"
 #include "webrtc/base/logging.h"
-#include "webrtc/base/ptr_util.h"
 #include "webrtc/base/timeutils.h"
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 #include "webrtc/modules/desktop_capture/win/screen_capture_utils.h"
@@ -110,7 +109,8 @@ void ScreenCapturerWinDirectx::CaptureFrame() {
   contexts_.MoveToNextFrame();
   if (!contexts_.current_frame()) {
     contexts_.ReplaceCurrentFrame(
-        rtc::MakeUnique<DxgiDuplicatorController::Context>());
+        std::unique_ptr<DxgiDuplicatorController::Context>(
+            new DxgiDuplicatorController::Context()));
   }
 
   if (current_screen_id_ == kFullDesktopScreenId) {
