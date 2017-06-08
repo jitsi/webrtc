@@ -212,7 +212,7 @@ if (rtc_enable_protobuf) {
       "../modules/congestion_controller",
       "../modules/rtp_rtcp",
       "../system_wrappers:system_wrappers_default",
-      "//build/config:exe_and_shlib_deps",
+      "//build/config/sanitizers:deps",
     ]
     public_deps = [
       ":chart_proto",
