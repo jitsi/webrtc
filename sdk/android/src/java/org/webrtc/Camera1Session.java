@@ -69,6 +69,11 @@ class Camera1Session implements CameraSession {
       return;
     }
 
+    if (camera == null) {
+      callback.onFailure(FailureType.ERROR, "Camera not found");
+      return;
+    }
+
     try {
       camera.setPreviewTexture(surfaceTextureHelper.getSurfaceTexture());
     } catch (IOException e) {
