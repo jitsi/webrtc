@@ -242,7 +242,7 @@ abstract class CameraCapturer implements CameraVideoCapturer {
   @Override
   public void startCapture(int width, int height, int framerate) {
     Logging.d(TAG, "startCapture: " + width + "x" + height + "@" + framerate);
-    if (applicationContext == null) {
+    if (applicationContext == null || surfaceHelper == null) {
       throw new RuntimeException("CameraCapturer must be initialized before calling startCapture.");
     }
 
