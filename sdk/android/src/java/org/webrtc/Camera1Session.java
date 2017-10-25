@@ -129,7 +129,7 @@ class Camera1Session implements CameraSession {
     if (parameters.isVideoStabilizationSupported()) {
       parameters.setVideoStabilization(true);
     }
-    if (focusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+    if (focusModes != null && focusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
       parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
     }
     camera.setParameters(parameters);
