@@ -361,6 +361,11 @@ void PacedSender::SetPacingFactor(float pacing_factor) {
   pacing_factor_ = pacing_factor;
 }
 
+float PacedSender::GetPacingFactor() const {
+  rtc::CritScope cs(&critsect_);
+  return pacing_factor_;
+}
+
 void PacedSender::SetQueueTimeLimit(int limit_ms) {
   rtc::CritScope cs(&critsect_);
   queue_time_limit = limit_ms;
