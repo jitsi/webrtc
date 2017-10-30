@@ -85,12 +85,21 @@ class Camera1Session implements CameraSession {
     final android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
     android.hardware.Camera.getCameraInfo(cameraId, info);
 
-    final android.hardware.Camera.Parameters parameters = camera.getParameters();
-    final CaptureFormat captureFormat =
-        findClosestCaptureFormat(parameters, width, height, framerate);
-    final Size pictureSize = findClosestPictureSize(parameters, width, height);
+    android.hardware.Camera.Parameters parameters;
+    CaptureFormat captureFormat;
+    Size pictureSize;
 
-    updateCameraParameters(camera, parameters, captureFormat, pictureSize, captureToTexture);
+    try {
+      parameters = camera.getParameters();
+      captureFormat = findClosestCaptureFormat(parameters, width, height, framerate);
+      pictureSize = findClosestPictureSize(parameters, width, height);
+
+      updateCameraParameters(camera, parameters, captureFormat, pictureSize, captureToTexture);
+    } catch (RuntimeException e) {
+      camera.release();
+      callback.onFailure(FailureType.ERROR, e.getMessage());
+      return;
+    }
 
     if (!captureToTexture) {
       final int frameSize = captureFormat.frameSize();
