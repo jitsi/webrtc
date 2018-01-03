@@ -242,6 +242,7 @@ rtc_static_library("audio_processing") {
     "../../audio/utility:audio_frame_operations",
     "../../rtc_base:gtest_prod",
     "../../rtc_base:protobuf_utils",
+    "../../system_wrappers:field_trial_api",
     "../audio_coding:isac",
   ]
   public_deps = [
