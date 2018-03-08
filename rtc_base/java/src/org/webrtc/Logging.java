@@ -167,14 +167,7 @@ public class Logging {
   }
 
   private static String getStackTraceString(Throwable e) {
-    if (e == null) {
-      return "";
-    }
-
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    e.printStackTrace(pw);
-    return sw.toString();
+    return android.util.Log.getStackTraceString(e);
   }
 
   private static native void nativeEnableLogToDebugOutput(int nativeSeverity);
