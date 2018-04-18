@@ -6134,8 +6134,7 @@ void PeerConnection::OnRtpTransportChanged(
 void PeerConnection::OnDtlsTransportChanged(
     const std::string& mid,
     cricket::DtlsTransportInternal* dtls_transport) {
-  if (sctp_transport_) {
-    RTC_DCHECK(mid == sctp_mid_);
+  if (sctp_transport_ && mid == sctp_mid_) {
     sctp_transport_->SetDtlsTransport(dtls_transport);
   }
 }

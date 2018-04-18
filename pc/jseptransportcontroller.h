@@ -177,11 +177,19 @@ class JsepTransportController : public sigslot::has_slots<>,
   RTCError ApplyDescription_n(bool local,
                               SdpType type,
                               const cricket::SessionDescription* description);
-  RTCError ValidateBundleGroup(const cricket::SessionDescription* description);
+  RTCError ValidateAndMaybeUpdateBundleGroup(
+      bool local,
+      SdpType type,
+      const cricket::SessionDescription* description);
   RTCError ValidateContent(const cricket::ContentInfo& content_info);
 
-  void HandleRejectedContent(const cricket::ContentInfo& content_info);
+  void HandleRejectedContent(const cricket::ContentInfo& content_info,
+                             const cricket::SessionDescription* description);
   void HandleBundledContent(const cricket::ContentInfo& content_info);
+
+  void SetTransportForMid(const std::string& mid,
+                          cricket::JsepTransport2* jsep_transport);
+  void RemoveTransportForMid(const std::string& mid);
 
   cricket::JsepTransportDescription CreateJsepTransportDescription(
       cricket::ContentInfo content_info,
@@ -191,8 +199,8 @@ class JsepTransportController : public sigslot::has_slots<>,
 
   rtc::Optional<std::string> bundled_mid() const {
     rtc::Optional<std::string> bundled_mid;
-    if (bundle_group_) {
-      bundled_mid = std::move(*(bundle_group_->FirstContentName()));
+    if (bundle_group_ && bundle_group_->FirstContentName()) {
+      bundled_mid = *(bundle_group_->FirstContentName());
     }
     return bundled_mid;
   }
@@ -227,8 +235,7 @@ class JsepTransportController : public sigslot::has_slots<>,
   cricket::JsepTransport2* GetJsepTransportByName(
       const std::string& transport_name);
 
-  RTCError MaybeCreateJsepTransport(const std::string& mid,
-                                    const cricket::ContentInfo& content_info);
+  RTCError MaybeCreateJsepTransport(const cricket::ContentInfo& content_info);
   void MaybeDestroyJsepTransport(const std::string& mid);
   void DestroyAllJsepTransports_n();
 
@@ -284,6 +291,9 @@ class JsepTransportController : public sigslot::has_slots<>,
 
   std::map<std::string, std::unique_ptr<cricket::JsepTransport2>>
       jsep_transports_by_name_;
+  // This keeps track of the mapping between media section
+  // (BaseChannel/SctpTransport) and the JsepTransport2 underneath.
+  std::map<std::string, cricket::JsepTransport2*> mid_to_transport_;
 
   // Aggregate state for Transports.
   cricket::IceConnectionState ice_connection_state_ =
