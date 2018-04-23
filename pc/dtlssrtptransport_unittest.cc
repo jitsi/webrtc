@@ -38,10 +38,19 @@ class TransportObserver : public sigslot::has_slots<> {
   void OnPacketReceived(bool rtcp,
                         rtc::CopyOnWriteBuffer* packet,
                         const rtc::PacketTime& packet_time) {
-    rtcp ? last_recv_rtcp_packet_ = *packet : last_recv_rtp_packet_ = *packet;
+    if (rtcp) {
+      last_recv_rtcp_packet_ = *packet;
+      ++rtcp_count_;
+    } else {
+      last_recv_rtp_packet_ = *packet;
+      ++rtp_count_;
+    }
   }
 
   void OnReadyToSend(bool ready) { ready_to_send_ = ready; }
+
+  int rtp_count() const { return rtp_count_; }
+  int rtcp_count() const { return rtcp_count_; }
 
   rtc::CopyOnWriteBuffer last_recv_rtp_packet() {
     return last_recv_rtp_packet_;
@@ -57,6 +66,8 @@ class TransportObserver : public sigslot::has_slots<> {
   rtc::CopyOnWriteBuffer last_recv_rtp_packet_;
   rtc::CopyOnWriteBuffer last_recv_rtcp_packet_;
   bool ready_to_send_ = false;
+  int rtp_count_ = 0;
+  int rtcp_count_ = 0;
 };
 
 class DtlsSrtpTransportTest : public testing::Test,
@@ -135,16 +146,21 @@ class DtlsSrtpTransportTest : public testing::Test,
     rtc::PacketOptions options;
     // Send a packet from |srtp_transport1_| to |srtp_transport2_| and verify
     // that the packet can be successfully received and decrypted.
+    int prev_received_packets = transport_observer2_.rtp_count();
     ASSERT_TRUE(dtls_srtp_transport1_->SendRtpPacket(&rtp_packet1to2, options,
                                                      cricket::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer2_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer2_.last_recv_rtp_packet().data(),
                         kPcmuFrame, rtp_len));
+    EXPECT_EQ(prev_received_packets + 1, transport_observer2_.rtp_count());
+
+    prev_received_packets = transport_observer1_.rtp_count();
     ASSERT_TRUE(dtls_srtp_transport2_->SendRtpPacket(&rtp_packet2to1, options,
                                                      cricket::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer1_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer1_.last_recv_rtp_packet().data(),
                         kPcmuFrame, rtp_len));
+    EXPECT_EQ(prev_received_packets + 1, transport_observer1_.rtp_count());
   }
 
   void SendRecvRtcpPackets() {
@@ -160,18 +176,22 @@ class DtlsSrtpTransportTest : public testing::Test,
     rtc::PacketOptions options;
     // Send a packet from |srtp_transport1_| to |srtp_transport2_| and verify
     // that the packet can be successfully received and decrypted.
+    int prev_received_packets = transport_observer2_.rtcp_count();
     ASSERT_TRUE(dtls_srtp_transport1_->SendRtcpPacket(&rtcp_packet1to2, options,
                                                       cricket::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer2_.last_recv_rtcp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer2_.last_recv_rtcp_packet().data(),
                         kRtcpReport, rtcp_len));
+    EXPECT_EQ(prev_received_packets + 1, transport_observer2_.rtcp_count());
 
     // Do the same thing in the opposite direction;
+    prev_received_packets = transport_observer1_.rtcp_count();
     ASSERT_TRUE(dtls_srtp_transport2_->SendRtcpPacket(&rtcp_packet2to1, options,
                                                       cricket::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer1_.last_recv_rtcp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer1_.last_recv_rtcp_packet().data(),
                         kRtcpReport, rtcp_len));
+    EXPECT_EQ(prev_received_packets + 1, transport_observer1_.rtcp_count());
   }
 
   void SendRecvRtpPacketsWithHeaderExtension(
@@ -480,4 +500,36 @@ TEST_F(DtlsSrtpTransportTest, SignalReadyToSendFiredWithoutRtcpMux) {
   rtcp_dtls1->SetDestination(rtcp_dtls2.get());
   EXPECT_TRUE(transport_observer1_.ready_to_send());
   EXPECT_TRUE(transport_observer2_.ready_to_send());
+}
+
+// Test that if an endpoint "fully" enables RTCP mux, setting the RTCP
+// transport to null, it *doesn't* reset its SRTP context. That would cause the
+// ROC and SRTCP index to be reset, causing replay detection and other errors
+// when attempting to unprotect packets.
+// Regression test for bugs.webrtc.org/8996
+TEST_F(DtlsSrtpTransportTest, SrtpSessionNotResetWhenRtcpTransportRemoved) {
+  auto rtp_dtls1 = rtc::MakeUnique<FakeDtlsTransport>(
+      "audio", cricket::ICE_CANDIDATE_COMPONENT_RTP);
+  auto rtcp_dtls1 = rtc::MakeUnique<FakeDtlsTransport>(
+      "audio", cricket::ICE_CANDIDATE_COMPONENT_RTCP);
+  auto rtp_dtls2 = rtc::MakeUnique<FakeDtlsTransport>(
+      "audio", cricket::ICE_CANDIDATE_COMPONENT_RTP);
+  auto rtcp_dtls2 = rtc::MakeUnique<FakeDtlsTransport>(
+      "audio", cricket::ICE_CANDIDATE_COMPONENT_RTCP);
+
+  MakeDtlsSrtpTransports(rtp_dtls1.get(), rtcp_dtls1.get(), rtp_dtls2.get(),
+                         rtcp_dtls2.get(), /*rtcp_mux_enabled=*/true);
+  CompleteDtlsHandshake(rtp_dtls1.get(), rtp_dtls2.get());
+  CompleteDtlsHandshake(rtcp_dtls1.get(), rtcp_dtls2.get());
+
+  // Send some RTCP packets, causing the SRTCP index to be incremented.
+  SendRecvRtcpPackets();
+
+  // Set RTCP transport to null, which previously would trigger this problem.
+  dtls_srtp_transport1_->SetDtlsTransports(rtp_dtls1.get(), nullptr);
+
+  // Attempt to send more RTCP packets. If the issue occurred, one side would
+  // reset its context while the other would not, causing replay detection
+  // errors when a packet with a duplicate SRTCP index is received.
+  SendRecvRtcpPackets();
 }
