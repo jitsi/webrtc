@@ -463,6 +463,9 @@ RtpFrameReferenceFinder::FrameDecision RtpFrameReferenceFinder::ManageFrameVp9(
 
     frame->num_references = 0;
     GofInfo info = gof_info_.find(codec_header.tl0_pic_idx)->second;
+    if (gof_info_it == gof_info_.end())
+      return kDrop;
+
     FrameReceivedVp9(frame->id.picture_id, &info);
     UnwrapPictureIds(frame);
     return kHandOff;
