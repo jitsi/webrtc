@@ -290,6 +290,7 @@ void ScreenshareLayers::PopulateCodecSpecific(
       vp8_info->temporalIdx = 0;
       last_sync_timestamp_ = unwrapped_timestamp;
       vp8_info->layerSync = true;
+      active_layer_ = 0;
     } else if (last_base_layer_sync_ && vp8_info->temporalIdx != 0) {
       // Regardless of pattern the frame after a base layer sync will always
       // be a layer sync.
