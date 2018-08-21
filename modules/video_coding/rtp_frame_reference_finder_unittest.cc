@@ -170,7 +170,6 @@ class TestRtpFrameReferenceFinder : public ::testing::Test,
                      int32_t pid = kNoPictureId,
                      uint8_t sid = kNoSpatialIdx,
                      uint8_t tid = kNoTemporalIdx,
-                     int32_t tl0 = kNoTl0PicIdx,
                      bool inter = false,
                      std::vector<uint8_t> refs = std::vector<uint8_t>()) {
     VCMPacket packet;
@@ -184,7 +183,7 @@ class TestRtpFrameReferenceFinder : public ::testing::Test,
     packet.video_header.vp9().picture_id = pid % (1 << 15);
     packet.video_header.vp9().temporal_idx = tid;
     packet.video_header.vp9().spatial_idx = sid;
-    packet.video_header.vp9().tl0_pic_idx = tl0;
+    packet.video_header.vp9().tl0_pic_idx = kNoTl0PicIdx;
     packet.video_header.vp9().num_ref_pics = refs.size();
     for (size_t i = 0; i < refs.size(); ++i)
       packet.video_header.vp9().pid_diff[i] = refs[i];
@@ -1236,7 +1235,7 @@ TEST_F(TestRtpFrameReferenceFinder, Vp9FlexibleModeOneFrame) {
   uint16_t pid = Rand();
   uint16_t sn = Rand();
 
-  InsertVp9Flex(sn, sn, true, pid, 0, 0, 0, false);
+  InsertVp9Flex(sn, sn, true, pid, 0, 0, false);
 
   ASSERT_EQ(1UL, frames_from_callback_.size());
   CheckReferencesVp9(0, 0);
@@ -1246,20 +1245,20 @@ TEST_F(TestRtpFrameReferenceFinder, Vp9FlexibleModeTwoSpatialLayers) {
   uint16_t pid = Rand();
   uint16_t sn = Rand();
 
-  InsertVp9Flex(sn, sn, true, pid, 0, 0, 0, false);
-  InsertVp9Flex(sn + 1, sn + 1, true, pid, 1, 0, 0, true);
-  InsertVp9Flex(sn + 2, sn + 2, false, pid + 1, 1, 0, 0, false, {1});
-  InsertVp9Flex(sn + 3, sn + 3, false, pid + 2, 0, 0, 1, false, {2});
-  InsertVp9Flex(sn + 4, sn + 4, false, pid + 2, 1, 0, 1, false, {1});
-  InsertVp9Flex(sn + 5, sn + 5, false, pid + 3, 1, 0, 1, false, {1});
-  InsertVp9Flex(sn + 6, sn + 6, false, pid + 4, 0, 0, 2, false, {2});
-  InsertVp9Flex(sn + 7, sn + 7, false, pid + 4, 1, 0, 2, false, {1});
-  InsertVp9Flex(sn + 8, sn + 8, false, pid + 5, 1, 0, 2, false, {1});
-  InsertVp9Flex(sn + 9, sn + 9, false, pid + 6, 0, 0, 3, false, {2});
-  InsertVp9Flex(sn + 10, sn + 10, false, pid + 6, 1, 0, 3, false, {1});
-  InsertVp9Flex(sn + 11, sn + 11, false, pid + 7, 1, 0, 3, false, {1});
-  InsertVp9Flex(sn + 12, sn + 12, false, pid + 8, 0, 0, 4, false, {2});
-  InsertVp9Flex(sn + 13, sn + 13, false, pid + 8, 1, 0, 4, false, {1});
+  InsertVp9Flex(sn, sn, true, pid, 0, 0, false);
+  InsertVp9Flex(sn + 1, sn + 1, true, pid, 1, 0, true);
+  InsertVp9Flex(sn + 2, sn + 2, false, pid + 1, 1, 0, false, {1});
+  InsertVp9Flex(sn + 3, sn + 3, false, pid + 2, 0, 0, false, {2});
+  InsertVp9Flex(sn + 4, sn + 4, false, pid + 2, 1, 0, false, {1});
+  InsertVp9Flex(sn + 5, sn + 5, false, pid + 3, 1, 0, false, {1});
+  InsertVp9Flex(sn + 6, sn + 6, false, pid + 4, 0, 0, false, {2});
+  InsertVp9Flex(sn + 7, sn + 7, false, pid + 4, 1, 0, false, {1});
+  InsertVp9Flex(sn + 8, sn + 8, false, pid + 5, 1, 0, false, {1});
+  InsertVp9Flex(sn + 9, sn + 9, false, pid + 6, 0, 0, false, {2});
+  InsertVp9Flex(sn + 10, sn + 10, false, pid + 6, 1, 0, false, {1});
+  InsertVp9Flex(sn + 11, sn + 11, false, pid + 7, 1, 0, false, {1});
+  InsertVp9Flex(sn + 12, sn + 12, false, pid + 8, 0, 0, false, {2});
+  InsertVp9Flex(sn + 13, sn + 13, false, pid + 8, 1, 0, false, {1});
 
   ASSERT_EQ(14UL, frames_from_callback_.size());
   CheckReferencesVp9(0, 0);
@@ -1282,20 +1281,20 @@ TEST_F(TestRtpFrameReferenceFinder, Vp9FlexibleModeTwoSpatialLayersReordered) {
   uint16_t pid = Rand();
   uint16_t sn = Rand();
 
-  InsertVp9Flex(sn + 1, sn + 1, true, pid, 1, 0, 0, true);
-  InsertVp9Flex(sn + 2, sn + 2, false, pid + 1, 1, 0, 0, false, {1});
-  InsertVp9Flex(sn, sn, true, pid, 0, 0, 0, false);
-  InsertVp9Flex(sn + 4, sn + 4, false, pid + 2, 1, 0, 1, false, {1});
-  InsertVp9Flex(sn + 5, sn + 5, false, pid + 3, 1, 0, 1, false, {1});
-  InsertVp9Flex(sn + 3, sn + 3, false, pid + 2, 0, 0, 1, false, {2});
-  InsertVp9Flex(sn + 7, sn + 7, false, pid + 4, 1, 0, 2, false, {1});
-  InsertVp9Flex(sn + 6, sn + 6, false, pid + 4, 0, 0, 2, false, {2});
-  InsertVp9Flex(sn + 8, sn + 8, false, pid + 5, 1, 0, 2, false, {1});
-  InsertVp9Flex(sn + 9, sn + 9, false, pid + 6, 0, 0, 3, false, {2});
-  InsertVp9Flex(sn + 11, sn + 11, false, pid + 7, 1, 0, 3, false, {1});
-  InsertVp9Flex(sn + 10, sn + 10, false, pid + 6, 1, 0, 3, false, {1});
-  InsertVp9Flex(sn + 13, sn + 13, false, pid + 8, 1, 0, 4, false, {1});
-  InsertVp9Flex(sn + 12, sn + 12, false, pid + 8, 0, 0, 4, false, {2});
+  InsertVp9Flex(sn + 1, sn + 1, true, pid, 1, 0, true);
+  InsertVp9Flex(sn + 2, sn + 2, false, pid + 1, 1, 0, false, {1});
+  InsertVp9Flex(sn, sn, true, pid, 0, 0, false);
+  InsertVp9Flex(sn + 4, sn + 4, false, pid + 2, 1, 0, false, {1});
+  InsertVp9Flex(sn + 5, sn + 5, false, pid + 3, 1, 0, false, {1});
+  InsertVp9Flex(sn + 3, sn + 3, false, pid + 2, 0, 0, false, {2});
+  InsertVp9Flex(sn + 7, sn + 7, false, pid + 4, 1, 0, false, {1});
+  InsertVp9Flex(sn + 6, sn + 6, false, pid + 4, 0, 0, false, {2});
+  InsertVp9Flex(sn + 8, sn + 8, false, pid + 5, 1, 0, false, {1});
+  InsertVp9Flex(sn + 9, sn + 9, false, pid + 6, 0, 0, false, {2});
+  InsertVp9Flex(sn + 11, sn + 11, false, pid + 7, 1, 0, false, {1});
+  InsertVp9Flex(sn + 10, sn + 10, false, pid + 6, 1, 0, false, {1});
+  InsertVp9Flex(sn + 13, sn + 13, false, pid + 8, 1, 0, false, {1});
+  InsertVp9Flex(sn + 12, sn + 12, false, pid + 8, 0, 0, false, {2});
 
   ASSERT_EQ(14UL, frames_from_callback_.size());
   CheckReferencesVp9(0, 0);
@@ -1315,7 +1314,7 @@ TEST_F(TestRtpFrameReferenceFinder, Vp9FlexibleModeTwoSpatialLayersReordered) {
 }
 
 TEST_F(TestRtpFrameReferenceFinder, WrappingFlexReference) {
-  InsertVp9Flex(0, 0, false, 0, 0, 0, 0, false, {1});
+  InsertVp9Flex(0, 0, false, 0, 0, 0, false, {1});
 
   ASSERT_EQ(1UL, frames_from_callback_.size());
   CheckReferencesVp9(1, 0, 0);
