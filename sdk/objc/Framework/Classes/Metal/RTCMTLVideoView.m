@@ -136,6 +136,10 @@
     return;
   }
 
+  if (CGRectIsEmpty(view.bounds)) {
+    return;
+  }
+
   RTCMTLRenderer *renderer;
   if ([videoFrame.buffer isKindOfClass:[RTCCVPixelBuffer class]]) {
     RTCCVPixelBuffer *buffer = (RTCCVPixelBuffer*)videoFrame.buffer;
