@@ -7,6 +7,7 @@
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
 
+from __future__ import print_function
 import optparse
 import os
 import shutil
@@ -119,7 +120,7 @@ def DecodeBarcodesInVideo(options, path_to_decoder, video, stat_file):
 
   shutil.rmtree(png_working_directory)
   if barcode_decoder.returncode != 0:
-    print 'Failed to run barcode decoder script.'
+    print('Failed to run barcode decoder script.')
     return 1
   return 0
 
@@ -169,7 +170,7 @@ def main():
                                     stdout=sys.stdout, stderr=sys.stderr)
   frame_analyzer.wait()
   if frame_analyzer.returncode != 0:
-    print 'Failed to run frame analyzer.'
+    print('Failed to run frame analyzer.')
     return 1
 
   return 0

@@ -7,6 +7,7 @@
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
 
+from __future__ import print_function
 import multiprocessing
 import os
 import subprocess
@@ -53,7 +54,7 @@ def RunShellCommand(cmd_list, fail_msg=None):
   output, error = process.communicate()
   if process.returncode != 0:
     if fail_msg:
-      print >> sys.stderr, fail_msg
+      print(fail_msg, file=sys.stderr)
     raise HelperError('Failed to run %s: command returned %d and printed '
                       '%s and %s' % (' '.join(cmd_list), process.returncode,
                                      output, error))
@@ -97,8 +98,8 @@ def PerformActionOnAllFiles(directory, file_pattern, file_extension,
   successful = True
   for result in results:
     if not result.get():
-      print "At least one action %s failed for files %sxxxx.%s." % (
-          action, file_pattern, file_extension)
+      print("At least one action %s failed for files %sxxxx.%s." % (
+          action, file_pattern, file_extension))
       successful = False
 
   process_pool.close()

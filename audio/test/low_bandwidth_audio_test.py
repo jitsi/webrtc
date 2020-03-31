@@ -13,6 +13,7 @@ This script is the wrapper that runs the low-bandwidth audio test.
 After running the test, post-process steps for calculating audio quality of the
 output files will be performed.
 """
+from __future__ import print_function
 
 import argparse
 import collections
@@ -261,7 +262,7 @@ def main():
                                          reference_file, degraded_file)
         for metric, (value, units) in analyzer_results.items():
           # Output a result for the perf dashboard.
-          print 'RESULT %s: %s= %s %s' % (metric, test_name, value, units)
+          print('RESULT %s: %s= %s %s' % (metric, test_name, value, units))
           _AddChart(charts, metric, test_name, value, units)
 
         if args.remove:

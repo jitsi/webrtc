@@ -7,6 +7,7 @@
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
 
+from __future__ import print_function
 import optparse
 import os
 import sys
@@ -48,15 +49,15 @@ def ConvertYuvToPngFiles(yuv_file_name, yuv_frame_width, yuv_frame_height,
              % yuv_file_name, '-f', 'image2', '-vcodec', 'png',
              '%s' % output_files_pattern]
   try:
-    print 'Converting YUV file to PNG images (may take a while)...'
-    print ' '.join(command)
+    print('Converting YUV file to PNG images (may take a while)...')
+    print(' '.join(command))
     helper_functions.RunShellCommand(
         command, fail_msg='Error during YUV to PNG conversion')
   except helper_functions.HelperError, err:
-    print 'Error executing command: %s. Error: %s' % (command, err)
+    print('Error executing command: %s. Error: %s' % (command, err))
     return False
   except OSError:
-    print 'Did not find %s. Have you installed it?' % ffmpeg_path
+    print('Did not find %s. Have you installed it?' % ffmpeg_path)
     return False
   return True
 
@@ -82,7 +83,7 @@ def DecodeFrames(input_directory, zxing_path):
   """
   if not zxing_path:
     zxing_path = 'zxing.exe' if sys.platform == 'win32' else 'zxing'
-  print 'Decoding barcodes from PNG files with %s...' % zxing_path
+  print('Decoding barcodes from PNG files with %s...' % zxing_path)
   return helper_functions.PerformActionOnAllFiles(
       directory=input_directory, file_pattern='frame_',
       file_extension='png', start_number=1, action=_DecodeBarcodeInFile,
@@ -107,11 +108,11 @@ def _DecodeBarcodeInFile(file_name, command_line_decoder):
     text_file.write(out)
     text_file.close()
   except helper_functions.HelperError, err:
-    print 'Barcode in %s cannot be decoded.' % file_name
-    print err
+    print('Barcode in %s cannot be decoded.' % file_name)
+    print(err)
     return False
   except OSError:
-    print 'Did not find %s. Have you installed it?' % command_line_decoder
+    print('Did not find %s. Have you installed it?' % command_line_decoder)
     return False
   return True
 
@@ -127,7 +128,7 @@ def _GenerateStatsFile(stats_file_name, input_directory='.'):
   file_prefix = os.path.join(input_directory, 'frame_')
   stats_file = open(stats_file_name, 'w')
 
-  print 'Generating stats file: %s' % stats_file_name
+  print('Generating stats file: %s' % stats_file_name)
   for i in range(1, _CountFramesIn(input_directory=input_directory) + 1):
     frame_number = helper_functions.ZeroPad(i)
     barcode_file_name = file_prefix + frame_number + '.txt'
@@ -272,19 +273,19 @@ def main():
                               options.yuv_frame_height,
                               output_directory=options.png_working_dir,
                               ffmpeg_path=options.ffmpeg_path):
-    print 'An error occurred converting from YUV to PNG frames.'
+    print('An error occurred converting from YUV to PNG frames.')
     return -1
 
   # Decode the barcodes from the PNG frames.
   if not DecodeFrames(input_directory=options.png_working_dir,
                       zxing_path=options.zxing_path):
-    print 'An error occurred decoding barcodes from PNG frames.'
+    print('An error occurred decoding barcodes from PNG frames.')
     return -2
 
   # Generate statistics file.
   _GenerateStatsFile(options.stats_file,
                      input_directory=options.png_working_dir)
-  print 'Completed barcode decoding.'
+  print('Completed barcode decoding.')
   return 0
 
 if __name__ == '__main__':

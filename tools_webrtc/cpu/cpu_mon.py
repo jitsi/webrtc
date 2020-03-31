@@ -9,6 +9,7 @@
 # be found in the AUTHORS file in the root of the source tree.
 
 
+from __future__ import print_function
 import psutil
 import sys
 
@@ -38,7 +39,7 @@ class CpuSnapshot(object):
 
 
 def GrabCpuSamples(sample_count):
-  print 'Label for snapshot (enter to quit): '
+  print('Label for snapshot (enter to quit): ')
   label = raw_input().strip()
   if len(label) == 0:
     return None
@@ -50,12 +51,12 @@ def GrabCpuSamples(sample_count):
 
 
 def main():
-  print 'How many seconds to capture per snapshot (enter for 60)?'
+  print('How many seconds to capture per snapshot (enter for 60)?')
   sample_count = raw_input().strip()
   if len(sample_count) > 0 and int(sample_count) > 0:
     sample_count = int(sample_count)
   else:
-    print 'Defaulting to 60 samples.'
+    print('Defaulting to 60 samples.')
     sample_count = 60
 
   snapshots = []
@@ -66,7 +67,7 @@ def main():
     snapshots.append(snapshot)
 
   if len(snapshots) == 0:
-    print 'no samples captured'
+    print('no samples captured')
     return -1
 
   pyplot.title('CPU usage')

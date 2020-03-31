@@ -28,6 +28,7 @@ soon the step has executed.
 If any command line arguments are passed to the script, it is executed as a
 command in a subprocess.
 """
+from __future__ import print_function
 
 import os
 # psutil is not installed on non-Linux machines by default.
@@ -59,8 +60,8 @@ def IsWebCamRunning():
   for p in psutil.process_iter():
     try:
       if process_name == p.name:
-        print 'Found a running virtual webcam (%s with PID %s)' % (p.name,
-                                                                   p.pid)
+        print('Found a running virtual webcam (%s with PID %s)' % (p.name,
+                                                                   p.pid))
         return True
     except psutil.AccessDenied:
       pass  # This is normal if we query sys processes, etc.
@@ -71,10 +72,10 @@ def StartWebCam():
   try:
     if sys.platform == 'win32':
       subprocess.check_call(WEBCAM_WIN)
-      print 'Successfully launched virtual webcam.'
+      print('Successfully launched virtual webcam.')
     elif sys.platform.startswith('darwin'):
       subprocess.check_call(WEBCAM_MAC)
-      print 'Successfully launched virtual webcam.'
+      print('Successfully launched virtual webcam.')
     elif sys.platform.startswith('linux'):
 
       # Must redirect stdout/stderr/stdin to avoid having the subprocess
@@ -87,13 +88,13 @@ def StartWebCam():
       # Wait for a second and then check for aliveness to catch such errors.
       time.sleep(1)
       if process.poll() is None:
-        print 'Successfully launched virtual webcam with PID %s' % process.pid
+        print('Successfully launched virtual webcam with PID %s' % process.pid)
       else:
-        print 'Failed to launch virtual webcam.'
+        print('Failed to launch virtual webcam.')
         return False
 
   except Exception as e:
-    print 'Failed to launch virtual webcam: %s' % e
+    print('Failed to launch virtual webcam: %s' % e)
     return False
 
   return True

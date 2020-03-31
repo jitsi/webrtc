@@ -15,6 +15,7 @@
 #  form more information call:
 #  "python parse_ana_dump.py --help"
 
+from __future__ import print_function
 import struct
 from optparse import OptionParser
 
@@ -38,7 +39,7 @@ def GetNextMessageFromFile(file_to_parse):
     event = debug_dump_pb2.Event()
     event.ParseFromString(file_to_parse.read(message_size))
   except IOError:
-    print 'Invalid message in file'
+    print('Invalid message in file')
     return None
   return event
 
@@ -111,7 +112,7 @@ def main():
 
   options = parser.parse_args()[0]
   if options.dump_file_to_parse == None:
-    print "No dump file to parse is set.\n"
+    print("No dump file to parse is set.\n")
     parser.print_help()
     exit()
   (metrics, decisions) = ParseAnaDump(options.dump_file_to_parse)
@@ -119,7 +120,7 @@ def main():
   decision_keys = options.decision_keys
   plot_count = len(metric_keys) + len(decision_keys)
   if plot_count == 0:
-    print "You have to set at least one metric or decision to plot.\n"
+    print("You have to set at least one metric or decision to plot.\n")
     parser.print_help()
     exit()
   plots = []

@@ -10,6 +10,7 @@
 
 Usage: $ python plot_webrtc_test_logs.py filename.txt
 """
+from __future__ import print_function
 
 import numpy
 import sys
@@ -243,7 +244,7 @@ def StringToFloat(value):
   try:
     value = float(value)
   except ValueError:
-    print "Not a float, skipped %s" % value
+    print("Not a float, skipped %s" % value)
     return False, -1
 
   return True, value
@@ -269,13 +270,13 @@ def Plot(y_metric, x_metric, metrics):
   for key in sorted(metrics):
     data = metrics[key]
     if y_metric not in data:
-      print "Failed to find metric: %s" % y_metric
+      print("Failed to find metric: %s" % y_metric)
       continue
 
     y = numpy.array(data[y_metric])
     x = numpy.array(data[x_metric])
     if len(y) != len(x):
-      print "Length mismatch for %s, %s" % (y, x)
+      print("Length mismatch for %s, %s" % (y, x))
       continue
 
     label = y_metric + ' - ' + str(key)

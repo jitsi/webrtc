@@ -24,6 +24,7 @@ Usage examples:
                              -c 200 -df sender_time vp8.txt vp9.txt --next \\
                              -c 200 -df end_to_end vp8.txt vp9.txt
 """
+from __future__ import print_function
 
 import argparse
 from collections import defaultdict
@@ -404,7 +405,7 @@ def ShowOrSavePlots(plot_configs):
     plt.title(config.title)
     config.Plot(ax)
     if config.output_filename:
-      print "Saving to", config.output_filename
+      print("Saving to", config.output_filename)
       fig.savefig(config.output_filename)
       plt.close(fig)
 

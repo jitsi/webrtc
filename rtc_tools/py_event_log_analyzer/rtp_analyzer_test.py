@@ -13,6 +13,7 @@
 or
       python3 rtp_analyzer_test.py
 """
+from __future__ import print_function
 
 import collections
 import unittest
@@ -56,6 +57,6 @@ class TestDelay(unittest.TestCase):
 
 if __name__ == "__main__":
   if MISSING_NUMPY:
-    print "Missing numpy, skipping test."
+    print("Missing numpy, skipping test.")
   else:
     unittest.main()

@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
 #
 # Use of this source code is governed by a BSD-style license
@@ -246,11 +247,11 @@ def PrintUsedSuppressionsList(suppcounts):
   if not suppcounts:
     return False
 
-  print "-----------------------------------------------------"
-  print "Suppressions used:"
-  print "  count name"
+  print("-----------------------------------------------------")
+  print("Suppressions used:")
+  print("  count name")
   for (name, count) in sorted(suppcounts.items(), key=lambda (k,v): (v,k)):
-    print "%7d %s" % (count, name)
-  print "-----------------------------------------------------"
+    print("%7d %s" % (count, name))
+  print("-----------------------------------------------------")
   sys.stdout.flush()
   return True

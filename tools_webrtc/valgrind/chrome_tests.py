@@ -8,6 +8,7 @@
 # be found in the AUTHORS file in the root of the source tree.
 
 ''' Runs various chrome tests through valgrind_test.py.'''
+from __future__ import print_function
 
 import glob
 import logging
@@ -256,14 +257,14 @@ class ChromeTests:
       names.sort(key=lambda name: len(name))
       name_to_aliases[names[0]] = names[1:]
 
-    print
-    print "Available tests:"
-    print "----------------"
+    print()
+    print("Available tests:")
+    print("----------------")
     for name, aliases in sorted(name_to_aliases.iteritems()):
       if aliases:
-        print "   {} (aka {})".format(name, ', '.join(aliases))
+        print("   {} (aka {})".format(name, ', '.join(aliases)))
       else:
-        print "   {}".format(name)
+        print("   {}".format(name))
 
   def SetupLdPath(self, requires_build_dir):
     if requires_build_dir:

@@ -8,6 +8,7 @@
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
 
+from __future__ import print_function
 import argparse
 import collections
 import os
@@ -118,8 +119,8 @@ def main(argv):
 
   for i, message in enumerate(messages):
     if i > 0:
-      print
-    print message
+      print()
+    print(message)
 
   return bool(messages)
 

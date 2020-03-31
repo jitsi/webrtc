@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
 #
 # Use of this source code is governed by a BSD-style license
@@ -55,7 +56,7 @@ def main():
 
   (options, args) = parser.parse_args()
 
-  print (options, args)
+  print((options, args))
 
   devname = options.devname
 
@@ -97,18 +98,18 @@ def main():
         'org.appspot.apprtc.SAVE_REMOTE_VIDEO_TO_FILE_WIDTH': videoout_width,
         'org.appspot.apprtc.SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT': videoout_height})
 
-  print extras
+  print(extras)
 
   device.startActivity(data='https://appr.tc',
       action='android.intent.action.VIEW',
       component='org.appspot.apprtc/.ConnectActivity', extras=extras)
 
-  print 'Running a call for %d seconds' % call_length
+  print('Running a call for %d seconds' % call_length)
   for _ in xrange(call_length):
     sys.stdout.write('.')
     sys.stdout.flush()
     time.sleep(1)
-  print '\nEnding call.'
+  print('\nEnding call.')
 
   # Press back to end the call. Will end on both sides.
   device.press('KEYCODE_BACK', MonkeyDevice.DOWN_AND_UP)

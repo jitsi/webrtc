@@ -18,6 +18,7 @@ Arguments:
   -f  Add public key and certificate name.  Default is to skip and reduce
       generated file size.
 """
+from __future__ import print_function
 
 import commands
 from optparse import OptionParser
@@ -184,7 +185,7 @@ def _SafeName(original_file_name):
 
 def _PrintOutput(output, options):
   if options.verbose:
-    print output
+    print(output)
 
 if __name__ == '__main__':
   main()

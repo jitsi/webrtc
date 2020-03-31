@@ -13,6 +13,7 @@ These are checked into the repository as SHA-1 hashes (see *.sha1 files in
 subdirectories). Note that chrome-webrtc-resources is a Google-internal bucket,
 so please download and compile these tools manually if this script fails.
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -45,13 +46,13 @@ def main(directories):
       '--recursive',
       path,
     ]
-    print 'Downloading precompiled tools...'
+    print('Downloading precompiled tools...')
 
     # Perform download similar to how gclient hooks execute.
     try:
       gclient_utils.CheckCallAndFilterAndHeader(cmd, cwd=SRC_DIR, always=True)
     except (gclient_utils.Error, subprocess2.CalledProcessError) as e:
-      print 'Error: %s' % str(e)
+      print('Error: %s' % str(e))
       return 2
     return 0
 

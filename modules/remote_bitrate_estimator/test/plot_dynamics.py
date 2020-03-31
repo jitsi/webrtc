@@ -16,6 +16,7 @@
 # whether they should should be displayed in the same or separate windows.
 
 
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy
 import re
@@ -167,8 +168,8 @@ def main():
           # The sample will be ignored bv the figures that don't need it.
           f.AddSample(var_name, ssrc, alg_name, time, value)
       except ParsePlotLineException as e:
-        print e.reason
-        print e.line
+        print(e.reason)
+        print(e.line)
 
   # Plot figures.
   for f in figures:

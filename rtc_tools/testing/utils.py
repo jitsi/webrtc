@@ -8,6 +8,7 @@
 # be found in the AUTHORS file in the root of the source tree.
 
 """Utilities for all our deps-management stuff."""
+from __future__ import print_function
 
 import os
 import shutil
@@ -26,15 +27,15 @@ def RunSubprocessWithRetry(cmd):
       return
     except subprocess.CalledProcessError as exception:
       backoff = pow(2, i)
-      print 'Got %s, retrying in %d seconds...' % (exception, backoff)
+      print('Got %s, retrying in %d seconds...' % (exception, backoff))
       time.sleep(backoff)
 
-  print 'Giving up.'
+  print('Giving up.')
   raise exception
 
 
 def DownloadFilesFromGoogleStorage(path, auto_platform=True):
-  print 'Downloading files in %s...' % path
+  print('Downloading files in %s...' % path)
 
   extension = 'bat' if 'win32' in sys.platform else 'py'
   cmd = ['download_from_google_storage.%s' % extension,
@@ -64,20 +65,20 @@ def RemoveDirectory(*path):
   works. :/
   """
   file_path = os.path.join(*path)
-  print 'Deleting `{}`.'.format(file_path)
+  print('Deleting `{}`.'.format(file_path))
   if not os.path.exists(file_path):
-    print '`{}` does not exist.'.format(file_path)
+    print('`{}` does not exist.'.format(file_path))
     return
 
   if sys.platform == 'win32':
     # Give up and use cmd.exe's rd command.
     file_path = os.path.normcase(file_path)
     for _ in xrange(3):
-      print 'RemoveDirectory running %s' % (' '.join(
-          ['cmd.exe', '/c', 'rd', '/q', '/s', file_path]))
+      print('RemoveDirectory running %s' % (' '.join(
+          ['cmd.exe', '/c', 'rd', '/q', '/s', file_path])))
       if not subprocess.call(['cmd.exe', '/c', 'rd', '/q', '/s', file_path]):
         break
-      print '  Failed'
+      print('  Failed')
       time.sleep(3)
     return
   else:
@@ -93,7 +94,7 @@ def UnpackArchiveTo(archive_path, output_dir):
 
 
 def _UnzipArchiveTo(archive_path, output_dir):
-  print 'Unzipping {} in {}.'.format(archive_path, output_dir)
+  print('Unzipping {} in {}.'.format(archive_path, output_dir))
   zip_file = zipfile.ZipFile(archive_path)
   try:
     zip_file.extractall(output_dir)
@@ -102,7 +103,7 @@ def _UnzipArchiveTo(archive_path, output_dir):
 
 
 def _UntarArchiveTo(archive_path, output_dir):
-  print 'Untarring {} in {}.'.format(archive_path, output_dir)
+  print('Untarring {} in {}.'.format(archive_path, output_dir))
   tar_file = tarfile.open(archive_path, 'r:gz')
   try:
     tar_file.extractall(output_dir)

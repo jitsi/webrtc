@@ -13,6 +13,7 @@ Before running the generated command line, do this:
 
 gn gen out/coverage --args='use_clang_coverage=true is_component_build=false'
 """
+from __future__ import print_function
 
 import sys
 
@@ -48,7 +49,7 @@ def main():
   modules_unittests = 'out/coverage/modules_unittests'
   cmd[cmd.index('-c \'%s\'' % modules_unittests)] = WithXvfb(modules_unittests)
 
-  print ' '.join(cmd)
+  print(' '.join(cmd))
   return 0
 
 if __name__ == '__main__':

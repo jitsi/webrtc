@@ -19,6 +19,7 @@ Usage:
     or
     $ python tools_webrtc/gn_check_autofix.py -c some_mb_config
 """
+from __future__ import print_function
 
 import os
 import re
@@ -50,7 +51,7 @@ class TemporaryDirectory(object):
 
 
 def Run(cmd):
-  print 'Running:', ' '.join(cmd)
+  print('Running:', ' '.join(cmd))
   sub = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   return sub.communicate()
 
@@ -122,7 +123,7 @@ def main():
   errors = mb_output[0].split('ERROR')[1:]
 
   if mb_output[1]:
-    print mb_output[1]
+    print(mb_output[1])
     return 1
 
   for error in errors:
@@ -131,7 +132,7 @@ def main():
     if target_msg not in error:
       target_msg = 'It is not in any dependency of'
     if target_msg not in error:
-      print '\n'.join(error)
+      print('\n'.join(error))
       continue
     index = error.index(target_msg) + 1
     path, target = error[index].strip().split(':')
@@ -146,7 +147,7 @@ def main():
       deleted_file = '"' + os.path.basename(error[index+2].strip()) + '",'
       deleted_sources.add(deleted_file)
     else:
-      print '\n'.join(error)
+      print('\n'.join(error))
       continue
 
   for path, missing_deps in errors_by_file.items():
