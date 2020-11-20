@@ -231,8 +231,10 @@ public class Camera2Enumerator implements CameraEnumerator {
   // Convert from android.util.Size to Size.
   private static List<Size> convertSizes(android.util.Size[] cameraSizes) {
     final List<Size> sizes = new ArrayList<Size>();
-    for (android.util.Size size : cameraSizes) {
-      sizes.add(new Size(size.getWidth(), size.getHeight()));
+    if (cameraSizes != null) {
+      for (android.util.Size size : cameraSizes) {
+        sizes.add(new Size(size.getWidth(), size.getHeight()));
+      }
     }
     return sizes;
   }
