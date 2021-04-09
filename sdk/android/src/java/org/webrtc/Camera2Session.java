@@ -119,12 +119,13 @@ class Camera2Session implements CameraSession {
       Logging.d(TAG, "Camera opened.");
       cameraDevice = camera;
 
-      surfaceTextureHelper.setTextureSize(captureFormat.width, captureFormat.height);
-      surface = new Surface(surfaceTextureHelper.getSurfaceTexture());
       try {
+        surfaceTextureHelper.setTextureSize(captureFormat.width, captureFormat.height);
+        surface = new Surface(surfaceTextureHelper.getSurfaceTexture());
+
         camera.createCaptureSession(
             Arrays.asList(surface), new CaptureSessionCallback(), cameraThreadHandler);
-      } catch (CameraAccessException e) {
+      } catch (Exception e) {
         reportError("Failed to create capture session. " + e);
         return;
       }
