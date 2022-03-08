@@ -20,6 +20,7 @@
 #include "rtc_base/synchronization/mutex.h"
 
 #import "RTCAudioSessionConfiguration.h"
+#import "RTCAudioSessionProxy.h"
 #import "base/RTCLogging.h"
 
 #if !defined(ABSL_HAVE_THREAD_LOCAL)
@@ -47,7 +48,7 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
 // lock contention so coarse locks should be fine for now.
 @implementation RTC_OBJC_TYPE (RTCAudioSession) {
   webrtc::Mutex _mutex;
-  AVAudioSession *_session;
+  RTCAudioSessionProxy *_session;
   volatile int _activationCount;
   volatile int _webRTCSessionCount;
   BOOL _isActive;
@@ -72,7 +73,8 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
 }
 
 - (instancetype)init {
-  return [self initWithAudioSession:[AVAudioSession sharedInstance]];
+  AVAudioSession *native = [AVAudioSession sharedInstance];
+  return [self initWithAudioSession:[[RTC_OBJC_TYPE(RTCAudioSessionProxy) alloc] initWithAudioSession:native]];
 }
 
 /** This initializer provides a way for unit tests to inject a fake/mock audio session. */
@@ -109,10 +111,10 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
                selector:@selector(handleApplicationDidBecomeActive:)
                    name:UIApplicationDidBecomeActiveNotification
                  object:nil];
-    [_session addObserver:self
-               forKeyPath:kRTCAudioSessionOutputVolumeSelector
-                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                  context:(__bridge void *)RTC_OBJC_TYPE(RTCAudioSession).class];
+    [_session.native addObserver:self
+                      forKeyPath:kRTCAudioSessionOutputVolumeSelector
+                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                         context:(__bridge void *)RTC_OBJC_TYPE(RTCAudioSession).class];
 
     RTCLog(@"RTC_OBJC_TYPE(RTCAudioSession) (%p): init.", self);
   }
@@ -121,9 +123,9 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_session removeObserver:self
-                forKeyPath:kRTCAudioSessionOutputVolumeSelector
-                   context:(__bridge void *)RTC_OBJC_TYPE(RTCAudioSession).class];
+  [_session.native removeObserver:self
+                       forKeyPath:kRTCAudioSessionOutputVolumeSelector
+                          context:(__bridge void *)RTC_OBJC_TYPE(RTCAudioSession).class];
   RTCLog(@"RTC_OBJC_TYPE(RTCAudioSession) (%p): dealloc.", self);
 }
 
@@ -365,16 +367,15 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
   // Attempt to activate if we're not active.
   // Attempt to deactivate if we're active and it's the last unbalanced call.
   if (shouldSetActive) {
-    AVAudioSession *session = self.session;
     // AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation is used to ensure
     // that other audio sessions that were interrupted by our session can return
     // to their active state. It is recommended for VoIP apps to use this
     // option.
     AVAudioSessionSetActiveOptions options =
         active ? 0 : AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation;
-    success = [session setActive:active
-                     withOptions:options
-                           error:&error];
+    success = [self.session setActive:active
+                          withOptions:options
+                                error:&error];
     if (outError) {
       *outError = error;
     }
@@ -818,7 +819,7 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
 }
 
 - (void)audioSessionDidActivate:(AVAudioSession *)session {
-  if (_session != session) {
+  if (self.session.native != session) {
     RTCLogError(@"audioSessionDidActivate called on different AVAudioSession");
   }
   RTCLog(@"Audio session was externally activated.");
@@ -837,7 +838,7 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
 }
 
 - (void)audioSessionDidDeactivate:(AVAudioSession *)session {
-  if (_session != session) {
+  if (self.session.native != session) {
     RTCLogError(@"audioSessionDidDeactivate called on different AVAudioSession");
   }
   RTCLog(@"Audio session was externally deactivated.");
@@ -850,7 +851,7 @@ ABSL_CONST_INIT thread_local bool mutex_locked = false;
                         change:(NSDictionary *)change
                        context:(void *)context {
   if (context == (__bridge void *)RTC_OBJC_TYPE(RTCAudioSession).class) {
-    if (object == _session) {
+    if (object == _session.native) {
       NSNumber *newVolume = change[NSKeyValueChangeNewKey];
       RTCLog(@"OutputVolumeDidChange to %f", newVolume.floatValue);
       [self notifyDidChangeOutputVolume:newVolume.floatValue];

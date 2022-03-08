@@ -315,6 +315,8 @@ if (is_ios || is_mac) {
           "objc/components/audio/RTCAudioSession+Private.h",
           "objc/components/audio/RTCAudioSession.h",
           "objc/components/audio/RTCAudioSession.mm",
+          "objc/components/audio/RTCAudioSessionProxy.h",
+          "objc/components/audio/RTCAudioSessionProxy.m",
           "objc/components/audio/RTCAudioSessionConfiguration.h",
           "objc/components/audio/RTCAudioSessionConfiguration.m",
         ]
@@ -1235,6 +1237,7 @@ if (is_ios || is_mac) {
           "objc/base/RTCVideoRenderer.h",
           "objc/base/RTCYUVPlanarBuffer.h",
           "objc/components/audio/RTCAudioSession.h",
+          "objc/components/audio/RTCAudioSessionProxy.h",
           "objc/components/audio/RTCAudioSessionConfiguration.h",
           "objc/components/capturer/RTCCameraVideoCapturer.h",
           "objc/components/capturer/RTCFileVideoCapturer.h",

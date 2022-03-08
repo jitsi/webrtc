@@ -23,6 +23,7 @@ extern NSInteger const kRTCAudioSessionErrorConfiguration;
 
 @class RTC_OBJC_TYPE(RTCAudioSession);
 @class RTC_OBJC_TYPE(RTCAudioSessionConfiguration);
+@class RTC_OBJC_TYPE(RTCAudioSessionProxy);
 
 // Surfaces AVAudioSession events. WebRTC will listen directly for notifications
 // from AVAudioSession and handle them before calling these delegate methods,
@@ -130,11 +131,11 @@ RTC_OBJC_EXPORT
 RTC_OBJC_EXPORT
 @interface RTC_OBJC_TYPE (RTCAudioSession) : NSObject <RTC_OBJC_TYPE(RTCAudioSessionActivationDelegate)>
 
-/** Convenience property to access the AVAudioSession singleton. Callers should
+/** Convenience property to access the AVAudioSession singleton (session.native). Callers should
  *  not call setters on AVAudioSession directly, but other method invocations
  *  are fine.
  */
-@property(nonatomic, readonly) AVAudioSession *session;
+@property(nonatomic, readonly) RTC_OBJC_TYPE(RTCAudioSessionProxy) *session;
 
 /** Our best guess at whether the session is active based on results of calls to
  *  AVAudioSession.
