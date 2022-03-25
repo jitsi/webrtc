@@ -19,6 +19,7 @@
 #import "components/audio/RTCAudioSession+Private.h"
 
 #import "components/audio/RTCAudioSession.h"
+#import "components/audio/RTCAudioSessionProxy.h"
 #import "components/audio/RTCAudioSessionConfiguration.h"
 
 @interface RTC_OBJC_TYPE (RTCAudioSession)
@@ -310,7 +311,7 @@ OCMLocation *OCMMakeLocation(id testCase, const char *fileCString, int line){
 - (void)testAudioVolumeDidNotify {
   MockAVAudioSession *mockAVAudioSession = [[MockAVAudioSession alloc] init];
   RTC_OBJC_TYPE(RTCAudioSession) *session =
-      [[RTC_OBJC_TYPE(RTCAudioSession) alloc] initWithAudioSession:mockAVAudioSession];
+      [[RTC_OBJC_TYPE(RTCAudioSession) alloc] initWithAudioSession:[[RTC_OBJC_TYPE(RTCAudioSessionProxy) alloc] initWithAudioSession:(AVAudioSession*)mockAVAudioSession]];
   RTCAudioSessionTestDelegate *delegate =
       [[RTCAudioSessionTestDelegate alloc] init];
   [session addDelegate:delegate];
