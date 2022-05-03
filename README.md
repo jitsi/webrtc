@@ -15,3 +15,7 @@ Builds are currently done by `@saghul` manually (since they require testing and 
 ## Versioning
 
 Releases will follow the following versioning scheme: `Chrome Major Version`.`0`.`Release Number`
+
+## CocoaPods
+
+These builds are also published on CocoaPods with the name "JitsiWebRTC". They contain bitcode.
