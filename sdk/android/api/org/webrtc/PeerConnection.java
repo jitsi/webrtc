@@ -158,7 +158,8 @@ public class PeerConnection {
      * will be receiving media from a remote endpoint. This is only called if UNIFIED_PLAN
      * semantics are specified. The transceiver will be disposed automatically.
      */
-    @CalledByNative("Observer") default void onTrack(RtpTransceiver transceiver){};
+    @CalledByNative("Observer") default void onTrack(RtpTransceiver transceiver,
+        MediaStream[] mediaStreams){};
   }
 
   /** Java version of PeerConnectionInterface.IceServer. */

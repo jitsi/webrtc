@@ -439,7 +439,8 @@ void PeerConnectionObserverJni::OnTrack(
       NativeToJavaRtpTransceiver(env, transceiver);
   rtp_transceivers_.emplace_back(env, j_rtp_transceiver);
 
-  Java_Observer_onTrack(env, j_observer_global_, j_rtp_transceiver);
+  Java_Observer_onTrack(env, j_observer_global_, j_rtp_transceiver,
+                        NativeToJavaMediaStreamArray(env, transceiver->receiver()->streams()));
 }
 
 // If the NativeToJavaStreamsMap contains the stream, return it.
