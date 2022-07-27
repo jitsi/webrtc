@@ -147,7 +147,8 @@ RTC_OBJC_EXPORT
     didChangeConnectionState:(RTCPeerConnectionState)newState;
 
 - (void)peerConnection:(RTC_OBJC_TYPE(RTCPeerConnection) *)peerConnection
-    didStartReceivingOnTransceiver:(RTC_OBJC_TYPE(RTCRtpTransceiver) *)transceiver;
+    didStartReceivingOnTransceiver:(RTC_OBJC_TYPE(RTCRtpTransceiver) *)transceiver
+                           streams:(NSArray<RTC_OBJC_TYPE(RTCMediaStream) *> *)mediaStreams;
 
 /** Called when a receiver and its track are created. */
 - (void)peerConnection:(RTC_OBJC_TYPE(RTCPeerConnection) *)peerConnection

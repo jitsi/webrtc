@@ -160,9 +160,18 @@ void PeerConnectionDelegateAdapter::OnTrack(
       [[RTC_OBJC_TYPE(RTCRtpTransceiver) alloc] initWithFactory:peer_connection.factory
                                            nativeRtpTransceiver:nativeTransceiver];
   if ([peer_connection.delegate
-          respondsToSelector:@selector(peerConnection:didStartReceivingOnTransceiver:)]) {
+          respondsToSelector:@selector(peerConnection:didStartReceivingOnTransceiver:streams:)]) {
+    const auto streams = nativeTransceiver->receiver()->streams();
+    NSMutableArray *mediaStreams = [NSMutableArray arrayWithCapacity:streams.size()];
+    for (const auto &nativeStream : streams) {
+      RTC_OBJC_TYPE(RTCMediaStream) *mediaStream =
+          [[RTC_OBJC_TYPE(RTCMediaStream) alloc] initWithFactory:peer_connection.factory
+                                               nativeMediaStream:nativeStream];
+      [mediaStreams addObject:mediaStream];
+    }
     [peer_connection.delegate peerConnection:peer_connection
-              didStartReceivingOnTransceiver:transceiver];
+              didStartReceivingOnTransceiver:transceiver
+                                     streams:mediaStreams];
   }
 }
 
