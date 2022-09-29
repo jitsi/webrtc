@@ -18,4 +18,10 @@ Releases will follow the following versioning scheme: `Chrome Major Version`.`0`
 
 ## CocoaPods
 
-These builds are also published on CocoaPods with the name "JitsiWebRTC". They contain bitcode.
+These builds are also published on CocoaPods with the name "JitsiWebRTC".
+
+Starting with version 106 the builds don't contain bitcode (they do contain embedded dSYM slices).
+
+## Swift Package Manager
+
+As of release 106.0.0 a `Package.swift` file is provided for Swift Package Manager support.
