@@ -913,6 +913,7 @@ if (current_os == "linux" || is_android) {
     allow_poison = [ "software_video_codecs" ]
     deps = [
       ":libaom_av1_decoder_if_supported_jni",
+      ":libaom_av1_encoder_jni",
       ":libvpx_vp8_jni",
       ":libvpx_vp9_jni",
     ]
