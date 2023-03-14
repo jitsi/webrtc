@@ -1,0 +1,133 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.3'
+    }
+}
+
+plugins {
+    id 'maven-publish'
+    id 'signing'
+}
+
+ext {
+    groupId = 'org.jitsi'
+    webrtcVersion = '111'
+    libraryVersion = '111.0.0'
+}
+
+apply plugin: 'com.android.library'
+
+// Android configuration
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// Dependency and tool sources
+repositories {
+    google()
+    mavenCentral()
+}
+
+// Dependencies
+dependencies {
+    // libwebrtc
+    implementation files('libs/libwebrtc.jar')
+}
+
+// Note: Because the android components are created only during the
+// afterEvaluate phase, you must configure your publications using the
+// afterEvaluate() lifecycle method.
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                artifact androidSourcesJar
+
+                groupId = project.ext.groupId
+                artifactId = project.name
+                version = project.ext.libraryVersion
+
+                pom {
+                    name = 'Jitsi WebRTC build for Android'
+                    description = "WebRTC M${project.ext.webrtcVersion} builds for Android"
+                    url = 'https://github.com/jitsi/webrtc-android-builds'
+
+                    scm {
+                        url = 'https://github.com/jitsi/webrtc'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'LICENSE-APACHE'
+                        }
+                        license {
+                            name = 'The MIT License'
+                            url = 'LICENSE-MIT'
+                        }
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username System.env.SONATYPE_USER
+                    password System.env.SONATYPE_PW
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd() // Use gpg-agent. For config options, see `gradle.properties`.
+        sign publishing.publications.release
+    }
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+}
