@@ -102,6 +102,14 @@ afterEvaluate {
                             url = 'LICENSE-MIT'
                         }
                     }
+
+                    developers {
+                        developer {
+                            id = 'org.jitsi'
+                            name = 'Jitsi Team'
+                            email = 'dev@jitsi.org'
+                        }
+                    }
                 }
             }
         }
