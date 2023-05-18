@@ -86,7 +86,7 @@ afterEvaluate {
                 pom {
                     name = 'Jitsi WebRTC build for Android'
                     description = "WebRTC M${project.ext.webrtcVersion} builds for Android"
-                    url = 'https://github.com/jitsi/webrtc-android-builds'
+                    url = 'https://github.com/jitsi/webrtc'
 
                     scm {
                         url = 'https://github.com/jitsi/webrtc'
