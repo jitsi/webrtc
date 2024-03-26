@@ -118,8 +118,6 @@ class DataChannelTransportInterface {
   // Note: the default implementation always returns false (as it assumes no one
   // has implemented the interface).  This default implementation is temporary.
   virtual bool IsReadyToSend() const = 0;
-
-  virtual size_t buffered_amount(int channel_id) const = 0;
 };
 
 }  // namespace webrtc
