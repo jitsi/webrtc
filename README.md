@@ -10,7 +10,33 @@ submitted upstream once testes, or abandoned.
 
 ## Builds
 
-Builds are currently done by `@saghul` manually (since they require testing and potentially updating react-native-webrtc). Custom builds can be made with this [build script](https://github.com/react-native-webrtc/react-native-webrtc/blob/master/tools/build-webrtc.py).
+Builds are currently done by `@saghul` manually (since they require testing and potentially updating react-native-webrtc). Custom builds can be made with this [build script](tools/build-webrtc.py).
+
+### Building for iOS
+
+After having built the `WebRTC.xcframework.zip` artifact with the Python script some manual steps are necessary:
+
+- Create a GH release with the following versioning: X.0.Y where X is the Chrome milestone number and Y is our build number starting at 0
+    - The release should tag the milestone branch
+- Upload the build artifact to the release
+- Update the version number and path in `ios/JitsiWebRTC.podspec`
+- Compute the SHA-256 of the built artifact (yes, the zip file) and update `Package.swift`
+- Commit all changes
+- Push the spec to CocoaPods: `pod trunk push ios/JitsiWebRTC.podspec`
+
+### Building for Android
+
+After having built the `webrtc-android.zip` artifact with the Python script some manual steps are necessary:
+
+- Unzip the file and put it onto `android/libs` overwriting any existing file
+- Adjust the version numbers in `android/build.gradle`
+- Commit the result
+- Run the `Release Android` workflow, that will push the library to Maven Central
+- Go to: https://oss.sonatype.org
+- Login and go to "Staging Repositories"
+- Locate the new one with state "open"
+- Select it and hit "Close", this may take a bit of time to complete
+- After is shows up as "Closes", select it and hit "Release"
 
 ## Versioning
 
