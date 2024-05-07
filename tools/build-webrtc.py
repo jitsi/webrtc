@@ -283,14 +283,12 @@ def build(target_dir, platform, debug):
         shutil.copy(os.path.join(gn_out_dir, 'lib.java/sdk/android/libwebrtc.jar'), build_dir)
 
         for cpu in ANDROID_BUILD_CPUS:
-            lib_dir = os.path.join(build_dir, 'lib', ANDROID_CPU_ABI_MAP[cpu])
+            lib_dir = os.path.join(build_dir, ANDROID_CPU_ABI_MAP[cpu])
             mkdirp(lib_dir)
             gn_out_dir = 'out/%s-%s' % (build_type, cpu)
             shutil.copy(os.path.join(gn_out_dir, 'libjingle_peerconnection_so.so'), lib_dir)
 
-        sh('jar cvfM libjingle_peerconnection.so.jar lib', cwd=build_dir)
-        rmr(os.path.join(build_dir, 'lib'))
-        sh('zip -r android-webrtc.zip *.jar', cwd=build_dir)
+        sh('zip -r android-webrtc.zip *', cwd=build_dir)
 
 
 if __name__ == "__main__":
