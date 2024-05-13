@@ -15,8 +15,8 @@ plugins {
 
 ext {
     groupId = 'org.jitsi'
-    webrtcVersion = '118'
-    libraryVersion = '118.0.0'
+    webrtcVersion = '124'
+    libraryVersion = '124.0.0'
 }
 
 apply plugin: 'com.android.library'
