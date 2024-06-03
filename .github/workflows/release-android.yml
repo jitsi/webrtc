@@ -30,3 +30,4 @@ jobs:
           ./gradlew clean 
           ./gradlew assembleRelease 
           ./gradlew publish
+          ./gradlew closeAndReleaseRepository
