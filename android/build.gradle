@@ -16,7 +16,7 @@ plugins {
 ext {
     groupId = 'org.jitsi'
     webrtcVersion = '124'
-    libraryVersion = '124.0.0'
+    libraryVersion = '124.1.0'
 }
 
 apply plugin: 'com.android.library'
@@ -86,10 +86,10 @@ afterEvaluate {
                 pom {
                     name = 'Jitsi WebRTC build for Android'
                     description = "WebRTC M${project.ext.webrtcVersion} builds for Android"
-                    url = 'https://github.com/jitsi/webrtc'
+                    url = 'https://github.com/tchapgouv/webrtc'
 
                     scm {
-                        url = 'https://github.com/jitsi/webrtc'
+                        url = 'https://github.com/tchapgouv/webrtc'
                     }
 
                     licenses {
@@ -105,9 +105,9 @@ afterEvaluate {
 
                     developers {
                         developer {
-                            id = 'org.jitsi'
-                            name = 'Jitsi Team'
-                            email = 'dev@jitsi.org'
+                            id = 'fr.gouv.tchap'
+                            name = 'Tchap'
+                            email = 'support@tchap.beta.gouv.fr'
                         }
                     }
                 }
@@ -125,10 +125,10 @@ afterEvaluate {
         }
     }
 
-    signing {
-        useGpgCmd() // Use gpg-agent. For config options, see `gradle.properties`.
-        sign publishing.publications.release
-    }
+//    signing {
+//        useGpgCmd() // Use gpg-agent. For config options, see `gradle.properties`.
+//        sign publishing.publications.release
+//    }
 }
 
 task androidSourcesJar(type: Jar) {
