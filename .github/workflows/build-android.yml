@@ -1,0 +1,26 @@
+name: Build WebRTC for Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Android WebRTC Build
+    runs-on: ubuntu-latest
+    steps:
+
+      # Setup environment
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout WebRTC sources
+        uses: actions/checkout@v4
+        with:
+          ref: M124-proxy
+          path: M124-proxy
+      # Setup and Build
+      - name: Setup and Build WebRTC for Android platform
+        run: |
+          python ./tools/build-webrtc.py --setup --android target
+          python ./tools/build-webrtc.py --build --android target
+
+
