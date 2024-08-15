@@ -16,12 +16,13 @@ Builds are currently done by `@saghul` manually (since they require testing and 
 
 After having built the `WebRTC.xcframework.zip` artifact with the Python script some manual steps are necessary:
 
+- Update the version number and path in `ios/JitsiWebRTC.podspec`
+- Compute the SHA-256 of the built artifact (yes, the zip file) and update `Package.swift`
+- Copy the `Package.swift` file to the `MXXX` release branch and add it to git
+- Commit all changes
 - Create a GH release with the following versioning: X.0.Y where X is the Chrome milestone number and Y is our build number starting at 0
     - The release should tag the milestone branch
 - Upload the build artifact to the release
-- Update the version number and path in `ios/JitsiWebRTC.podspec`
-- Compute the SHA-256 of the built artifact (yes, the zip file) and update `Package.swift`
-- Commit all changes
 - Push the spec to CocoaPods: `pod trunk push ios/JitsiWebRTC.podspec`
 
 ### Building for Android
