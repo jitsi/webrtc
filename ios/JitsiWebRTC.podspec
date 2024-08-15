@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'JitsiWebRTC'
-  s.version          = '124.0.0'
+  s.version          = '124.0.1'
   s.summary          = 'WebRTC build provided by Jitsi'
   s.description      = 'This is the WebRTC build the Jitsi project uses and provides for React Native WebRTC'
   s.homepage         = 'https://github.com/jitsi/webrtc'
@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   LICENSE
   }
   s.authors          = 'The WebRTC project authors'
-  s.source           = { :http => 'https://github.com/jitsi/webrtc/releases/download/v124.0.0/WebRTC.xcframework.zip', :flatten => false }
+  s.source           = { :http => 'https://github.com/jitsi/webrtc/releases/download/v124.0.1/WebRTC.xcframework.zip', :flatten => false }
   s.platform         = :ios, '12.0'
   s.vendored_frameworks = 'WebRTC.xcframework'
 end
