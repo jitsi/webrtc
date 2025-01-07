@@ -305,8 +305,7 @@ def build(target_dir, platform, debug):
         xcodebuild_cmd += ' -framework %s' % os.path.abspath(os.path.join(gn_out_dir, APPLE_FRAMEWORK_NAME))
         xcodebuild_cmd += ' -debug-symbols %s' % os.path.abspath(os.path.join(gn_out_dir, APPLE_DSYM_NAME))
         sh(xcodebuild_cmd)
-        sh('zip -r WebRTC.xcframework.zip WebRTC.xcframework', cwd=build_dir)
-        rmr(xcframework_path)
+        sh('zip -y -r WebRTC.xcframework.zip WebRTC.xcframework', cwd=build_dir)
     else:
         gn_out_dir = 'out/%s-%s' % (build_type, ANDROID_BUILD_CPUS[0])
         shutil.copy(os.path.join(gn_out_dir, 'lib.java/sdk/android/libwebrtc.jar'), build_dir)
