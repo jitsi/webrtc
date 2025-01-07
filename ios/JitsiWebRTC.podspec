@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'JitsiWebRTC'
-  s.version          = '124.0.1'
+  s.version          = '124.0.2'
   s.summary          = 'WebRTC build provided by Jitsi'
   s.description      = 'This is the WebRTC build the Jitsi project uses and provides for React Native WebRTC'
   s.homepage         = 'https://github.com/jitsi/webrtc'
