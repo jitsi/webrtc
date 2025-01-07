@@ -1,9 +1,9 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 import PackageDescription
 
 let package = Package(
     name: "JitsiWebRTC",
-    platforms: [.iOS(.v12)],
+    platforms: [.iOS(.v12), .macOS(.v13)],
     products: [
         .library(
             name: "WebRTC",
