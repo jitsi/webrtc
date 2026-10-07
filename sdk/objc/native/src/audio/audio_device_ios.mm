@@ -353,6 +353,11 @@ void AudioDeviceIOS::OnValidRouteChange() {
   thread_->PostTask(SafeTask(safety_, [this] { HandleValidRouteChange(); }));
 }
 
+void AudioDeviceIOS::OnRunningStateChanged() {
+  RTC_DCHECK(thread_);
+  thread_->PostTask(SafeTask(safety_, [this] { HandleAudioUnitRunningStateChange(); }));
+}
+
 void AudioDeviceIOS::OnCanPlayOrRecordChange(bool can_play_or_record) {
   RTC_DCHECK(thread_);
   thread_->PostTask(SafeTask(
@@ -518,6 +523,25 @@ void AudioDeviceIOS::HandleValidRouteChange() {
   RTC_OBJC_TYPE(RTCAudioSession)* session = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
   RTCLog(@"%@", session);
   HandleSampleRateChange();
+}
+
+void AudioDeviceIOS::HandleAudioUnitRunningStateChange() {
+  RTC_DCHECK_RUN_ON(thread_);
+  // The listener fires on every start and stop, including WebRTC's own and the
+  // restart below; those runs return here. Only a unit marked as started that
+  // isn't running was stopped by someone else, e.g. other code deactivating the
+  // audio session.
+  if (!audio_unit_ || audio_unit_->GetState() != VoiceProcessingAudioUnit::kStarted ||
+      audio_unit_->IsRunning()) {
+    return;
+  }
+  if (!audio_unit_->Stop()) {
+    RTCLogError(@"Failed to stop the externally stopped audio unit. Not restarting it.");
+    return;
+  }
+  PrepareForNewStart();
+  RTCLog(@"Audio unit was stopped externally. Restarting it.");
+  UpdateAudioUnit([RTC_OBJC_TYPE(RTCAudioSession) sharedInstance].canPlayOrRecord);
 }
 
 void AudioDeviceIOS::HandleCanPlayOrRecordChange(bool can_play_or_record) {

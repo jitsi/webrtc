@@ -111,6 +111,12 @@ bool VoiceProcessingAudioUnit::Init() {
     return false;
   }
 
+  result = AudioUnitAddPropertyListener(
+      vpio_unit_, kAudioOutputUnitProperty_IsRunning, OnIsRunningChanged, observer_);
+  if (result != noErr) {
+    RTCLogError(@"Failed to add the IsRunning listener. Error=%ld.", (long)result);
+  }
+
   // Enable input on the input scope of the input element.
   UInt32 enable_input = 1;
   result = AudioUnitSetProperty(vpio_unit_, kAudioOutputUnitProperty_EnableIO,
@@ -346,6 +352,18 @@ OSStatus VoiceProcessingAudioUnit::Start() {
   return noErr;
 }
 
+bool VoiceProcessingAudioUnit::IsRunning() const {
+  UInt32 is_running = 0;
+  UInt32 size = sizeof(is_running);
+  OSStatus result = AudioUnitGetProperty(vpio_unit_,
+                                         kAudioOutputUnitProperty_IsRunning,
+                                         kAudioUnitScope_Global,
+                                         0,
+                                         &is_running,
+                                         &size);
+  return result == noErr && is_running != 0;
+}
+
 bool VoiceProcessingAudioUnit::Stop() {
   RTC_DCHECK_GE(state_, kUninitialized);
   RTCLog(@"Stopping audio unit.");
@@ -419,6 +437,14 @@ OSStatus VoiceProcessingAudioUnit::OnDeliverRecordedData(
                                                num_frames, io_data);
 }
 
+void VoiceProcessingAudioUnit::OnIsRunningChanged(void* in_ref_con,
+                                                  AudioUnit audio_unit,
+                                                  AudioUnitPropertyID property_id,
+                                                  AudioUnitScope scope,
+                                                  AudioUnitElement element) {
+  static_cast<VoiceProcessingAudioUnitObserver*>(in_ref_con)->OnRunningStateChanged();
+}
+
 OSStatus VoiceProcessingAudioUnit::NotifyGetPlayoutData(
     AudioUnitRenderActionFlags* flags,
     const AudioTimeStamp* time_stamp,
@@ -473,6 +499,9 @@ void VoiceProcessingAudioUnit::DisposeAudioUnit() {
       case kInitRequired:
         break;
     }
+
+    AudioUnitRemovePropertyListenerWithUserData(
+        vpio_unit_, kAudioOutputUnitProperty_IsRunning, OnIsRunningChanged, observer_);
 
     RTCLog(@"Disposing audio unit.");
     OSStatus result = AudioComponentInstanceDispose(vpio_unit_);

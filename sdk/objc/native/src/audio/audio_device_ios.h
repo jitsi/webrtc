@@ -159,6 +159,7 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
                             UInt32 bus_number,
                             UInt32 num_frames,
                             AudioBufferList* io_data) override;
+  void OnRunningStateChanged() override;
 
   bool IsInterrupted();
 
@@ -171,6 +172,7 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
   void HandleSampleRateChange();
   void HandlePlayoutGlitchDetected();
   void HandleOutputVolumeChange();
+  void HandleAudioUnitRunningStateChange();
 
   // Uses current `playout_parameters_` and `record_parameters_` to inform the
   // audio device buffer (ADB) about our internal audio parameters.
