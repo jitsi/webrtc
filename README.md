@@ -31,13 +31,17 @@ After having built the `webrtc-android.zip` artifact with the Python script some
 
 - Unzip the file and put it onto `android/libs` overwriting any existing file
 - Adjust the version numbers in `android/build.gradle`
-- Commit the result
-- Run the `Release Android` workflow, that will push the library to Maven Central
-- Go to: https://oss.sonatype.org
-- Login and go to "Staging Repositories"
-- Locate the new one with state "open"
-- Select it and hit "Close", this may take a bit of time to complete
-- After is shows up as "Closes", select it and hit "Release"
+- Commit the result (via a PR)
+- Run the `Release Android` workflow. It publishes `org.jitsi:webrtc:<version>` to Maven Central through the
+  [Central Portal](https://central.sonatype.com) and releases the deployment automatically; nothing to click.
+
+The workflow needs these repository secrets:
+
+- `MAVEN_CENTRAL_USERNAME` / `MAVEN_CENTRAL_PASSWORD`: a Central Portal user token for the account owning `org.jitsi`
+- `GPG_KEY` / `GPG_PW`: the ASCII-armored PGP private key used to sign the artifacts, and its passphrase
+
+To try the packaging locally: `cd android && ./gradlew publishToMavenLocal` (unsigned unless `signingInMemoryKey`
+and `signingInMemoryKeyPassword` are passed as Gradle properties).
 
 ## Versioning
 
