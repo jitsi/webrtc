@@ -15,8 +15,8 @@ plugins {
 
 ext {
     groupId = 'org.jitsi'
-    webrtcVersion = '124'
-    libraryVersion = '124.0.0'
+    webrtcVersion = '155'
+    libraryVersion = '155.0.0'
 }
 
 apply plugin: 'com.android.library'
@@ -27,7 +27,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 import errno
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -54,7 +55,7 @@ _GN_APPLE_COMMON = [
 ]
 
 _GN_IOS_ARGS = [
-    'ios_deployment_target="12.0"',
+    'ios_deployment_target="14.0"',
     'ios_enable_code_signing=false',
     'target_os="ios"',
     'target_environment="%s"'
@@ -67,7 +68,9 @@ _GN_MACOS_ARGS = [
 GN_MACOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_MACOS_ARGS)
 
 _GN_ANDROID_ARGS = [
-    'target_os="android"'
+    'target_os="android"',
+    # build_server (the default) needs autoninja; we drive ninja directly
+    'android_static_analysis="off"'
 ]
 GN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)
 
@@ -96,6 +99,20 @@ def rmr(path):
     except OSError as e:
         if e.errno != errno.ENOENT:
             raise
+
+
+def pin_java_release(level):
+    for path in ('build/android/gyp/compile_java.py', 'build/android/gyp/turbine.py'):
+        with open(path) as f:
+            src = f.read()
+        # compile_java.py: '--release', <comments>, '25',   turbine.py: ['--release', '25']
+        src, count = re.subn(r"('--release',(?:\s*#[^\n]*\n)*\s*)'\d+'", r"\g<1>'%s'" % level, src)
+        if count != 1:
+            print('Expected exactly one javac --release value in %s, found %d; refusing to build with an unknown Java target' % (path, count))
+            sys.exit(1)
+        with open(path, 'w') as f:
+            f.write(src)
+        print('Pinned javac --release %s in %s' % (level, path))
 
 
 # The Real Deal
@@ -182,6 +199,10 @@ def build(target_dir, platform, debug):
 
     # Cleanup old build
     rmr('out')
+
+    if platform == 'android':
+        # Chromium compiles Java with its hermetic JDK's --release (25 at M155); D8/Jetifier in AGP 8.x can't read that.
+        pin_java_release('17')
 
     # Run GN
     if platform == 'ios':
