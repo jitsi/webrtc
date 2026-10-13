@@ -37,7 +37,7 @@ After having built the `webrtc-android.zip` artifact with the Python script some
 
 The workflow needs these repository secrets:
 
-- `MAVEN_CENTRAL_USERNAME` / `MAVEN_CENTRAL_PASSWORD`: a Central Portal user token for the account owning `org.jitsi`
+- `SONATYPE_USER_2` / `SONATYPE_PW_2`: the organization-wide Central Portal user token (shared with jicoco and the other Jitsi Maven publishers; the repo must be granted access to these org secrets)
 - `GPG_KEY` / `GPG_PW`: the ASCII-armored PGP private key used to sign the artifacts, and its passphrase
 
 To try the packaging locally: `cd android && ./gradlew publishToMavenLocal` (unsigned unless `signingInMemoryKey`
