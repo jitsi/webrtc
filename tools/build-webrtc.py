@@ -106,7 +106,10 @@ def pin_java_release(level):
         with open(path) as f:
             src = f.read()
         # compile_java.py: '--release', <comments>, '25',   turbine.py: ['--release', '25']
-        src = re.sub(r"('--release',(?:\s*#[^\n]*\n)*\s*)'\d+'", r"\g<1>'%s'" % level, src)
+        src, count = re.subn(r"('--release',(?:\s*#[^\n]*\n)*\s*)'\d+'", r"\g<1>'%s'" % level, src)
+        if count != 1:
+            print('Expected exactly one javac --release value in %s, found %d; refusing to build with an unknown Java target' % (path, count))
+            sys.exit(1)
         with open(path, 'w') as f:
             f.write(src)
         print('Pinned javac --release %s in %s' % (level, path))
