@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.library' version '8.13.2'
-    id 'com.vanniktech.maven.publish' version '0.37.0'
+    id 'com.vanniktech.maven.publish' version '0.35.0'
 }
 
 ext {
@@ -77,7 +77,7 @@ mavenPublishing {
 
         scm {
             url = 'https://github.com/jitsi/webrtc'
-            connection = 'scm:git:git://github.com/jitsi/webrtc.git'
+            connection = 'scm:git:https://github.com/jitsi/webrtc.git'
             developerConnection = 'scm:git:ssh://git@github.com/jitsi/webrtc.git'
         }
     }
