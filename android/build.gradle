@@ -5,7 +5,7 @@ plugins {
 
 ext {
     webrtcVersion = '155'
-    libraryVersion = '155.0.0'
+    libraryVersion = '155.0.1'
 }
 
 android {
